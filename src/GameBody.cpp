@@ -9,14 +9,16 @@
 
 using cinder::Color;
 
-GameBody::GameBody(b2Body* body, b2Vec2 position, float bodyWidth, float bodyHeight) {
+GameBody::GameBody(b2Body* body, b2Vec2 position, float bodyWidth, float bodyHeight, float r, float g, float b) {
   this->position = position;
   this->width = bodyWidth;
   this->height = bodyHeight;
   this->body = body;
   shape.SetAsBox(width, height);
   this->body->CreateFixture(&shape, 0.0f);
-  color = {0, 1, 0};
+  red = r;
+  green = g;
+  blue = b;
 }
 
 void GameBody::draw() {
@@ -27,7 +29,7 @@ void GameBody::draw() {
 //  glPushMatrix();
 //  gl::translate(pos);
 
-  cinder::gl::color(color.r, color.g, color.b);
+  cinder::gl::color(red, green, blue);
   float widthToDraw = Conversions::dimensionsToScreen(width) / 2;
   float heightToDraw = Conversions::dimensionsToScreen(height) / 2;
 //  std::cout << "Body position: (" << pos.x << ", " << pos.y << ") widthToDraw: " << std::to_string(widthToDraw) << " heightToDraw: " << std::to_string(heightToDraw) << std::endl;
@@ -44,21 +46,30 @@ float GameBody::getWidth() { return width; }
 
 float GameBody::getHeight() { return height; }
 
-GameBody::GameBody(b2Body* body, float bodyWidth, float bodyHeight) {
-  if (body->GetType() == b2_dynamicBody) {
-
-    shape.SetAsBox(bodyWidth, bodyHeight);
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    this->body = body;
-    this->body->CreateFixture(&fixtureDef);
-
-  } else {
-    GameBody(body, body->GetPosition(), width, height);
-  }
-}
+//GameBody::GameBody(b2Body* body, float bodyWidth, float bodyHeight) {
+//  if (body->GetType() == b2_dynamicBody) {
+//
+//    shape.SetAsBox(bodyWidth, bodyHeight);
+//    fixtureDef.shape = &shape;
+//    fixtureDef.density = 1.0f;
+//    fixtureDef.friction = 0.3f;
+//    this->body = body;
+//    this->body->CreateFixture(&fixtureDef);
+//
+//  } else {
+//    GameBody(body, body->GetPosition(), width, height);
+//  }
+//}
 
 GameBody::GameBody() {
-  color = {0, 1, 0};
+  red = 0.0f;
+  green = 1.0f;
+  blue = 0.0f;
+}
+
+void GameBody::setColor(float r, float g, float b) {
+  red = r;
+  green = g;
+  blue = b;
+  std::cout << "color" << std::endl;
 }

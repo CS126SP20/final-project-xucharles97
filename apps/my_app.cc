@@ -34,26 +34,22 @@ MyApp::MyApp() :
 void MyApp::setup() {
   upPressed, downPressed, leftPressed, rightPressed = false;
 
-  //TODO: Refactor into classes specific to a given level (use polymorphism)
-  b2BodyDef groundBodyDef;
-  groundBodyDef.position.Set(width / 2, height - 75);
-  demo.CreateBody(width, 150, groundBodyDef.position);
 
-//  b2BodyDef top;
-//  top.position.Set(width / 2, 0);
-//  demo.CreateBody(width, 25, top.position);
-//
-  b2BodyDef left;
-  left.position.Set(0, height / 2);
-  demo.CreateBody(1, height, left.position);
-//
-//  b2BodyDef right;
-//  right.position.Set(width - 50, height / 2);
-//  demo.CreateBody(right, 25, height, right.position);
-//
+  demo.CreateBody(width, 150, width / 2, height - 75);
+
+  demo.CreateBody(25, height, 0, height / 2);
+
+  demo.CreateBody(25, height, width, height / 2);
+
+  demo.CreateBody(100, height / 2, width / 2, height - 200);
+
+  demo.CreateBody(250, height / 4, width / 2, height - 500);
+
   demo.setPlayer(125.0f, height - 150);
 
-  inJumpCooldown = false;
+  demo.setEndPoint(width - 125.0f, height - 175.0f);
+
+  levelPassed = false;
   timeUntilNextJump = 0;
 }
 
@@ -63,23 +59,51 @@ void MyApp::update() {
     timeUntilNextJump--;
   }
 
-  demo.Step(leftPressed, rightPressed, upPressed, downPressed);
+  if (demo.Step(leftPressed, rightPressed, upPressed, downPressed)) {
+    levelPassed = true;
+  }
 
   upPressed = false;
 
 }
 
 void MyApp::draw() {
-  cinder::gl::clear();
-  drawWorld(demo);
 
-  cinder::gl::color(1, 0, 0);
-  cinder::vec2 position = demo.getPlayer().getScreenPosition();
+  if (levelPassed) {
+    //if you won, print a win message
+    //copied from snake
+    cinder::gl::clear(Color(0.0f, 1.0f, 0.0f));
+    std::string text = "You win!";
+    Color color = {0, 0, 0};
+    cinder::ivec2 size = {300, 50};
+    cinder::vec2 loc = {width / 2, height / 2};
+
+    auto box = TextBox()
+        .alignment(TextBox::CENTER)
+        .font(cinder::Font("Arial Unicode MS", 30))
+        .size(size)
+        .color(color)
+        .backgroundColor(ColorA(0, 0, 0, 0))
+        .text(text);
+    const auto box_size = box.getSize();
+    const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
+    const auto surface = box.render();
+    const auto texture = cinder::gl::Texture::create(surface);
+    cinder::gl::draw(texture, locp);
+
+  } else {
+    cinder::gl::clear();
+    drawWorld(demo);
+  }
+
+
+//  cinder::gl::color(1, 0, 0);
+//  cinder::vec2 position = demo.getPlayer().getScreenPosition();
 //  cout << "Player position: (" << position.x << ", " << position.y << ")" << std::endl;
-  float widthToDraw = Conversions::dimensionsToScreen(demo.getPlayer().getWidth()) / 2;
-  float heightToDraw = Conversions::dimensionsToScreen(demo.getPlayer().getHeight()) / 2;
-  Rectf rect(position.x - widthToDraw, position.y - heightToDraw, position.x + widthToDraw, position.y + heightToDraw);
-  cinder::gl::drawSolidRect(rect);
+//  float widthToDraw = Conversions::dimensionsToScreen(demo.getPlayer().getWidth()) / 2;
+//  float heightToDraw = Conversions::dimensionsToScreen(demo.getPlayer().getHeight()) / 2;
+//  Rectf rect(position.x - widthToDraw, position.y - heightToDraw, position.x + widthToDraw, position.y + heightToDraw);
+//  cinder::gl::drawSolidRect(rect);
 }
 
 void MyApp::keyDown(KeyEvent event) {
@@ -110,11 +134,11 @@ void MyApp::keyDown(KeyEvent event) {
 
 void MyApp::keyUp(KeyEvent event) {
   int code = event.getCode();
-  if (code == KeyEvent::KEY_UP || code == KeyEvent::KEY_k) {
+  if (code == KeyEvent::KEY_UP || code == KeyEvent::KEY_w) {
     upPressed = false;
   }
 
-  if (code == KeyEvent::KEY_DOWN || code == KeyEvent::KEY_j) {
+  if (code == KeyEvent::KEY_DOWN || code == KeyEvent::KEY_s) {
     downPressed = false;
   }
 
@@ -122,7 +146,7 @@ void MyApp::keyUp(KeyEvent event) {
     leftPressed = false;
   }
 
-  if (code == KeyEvent::KEY_RIGHT || code == KeyEvent::KEY_s) {
+  if (code == KeyEvent::KEY_RIGHT || code == KeyEvent::KEY_d) {
     rightPressed = false;
   }
 }

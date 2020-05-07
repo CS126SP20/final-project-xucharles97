@@ -28,17 +28,26 @@ void GameWorld::CreateBody(b2BodyDef body) {
 
 }
 
-
 void GameWorld::CreateBody(float width, float height, b2Vec2 position) {
+  CreateBody(width, height, position.x, position.y, 0.0f, 1.0f, 0.0f);
+
+}
+
+void GameWorld::CreateBody(float width, float height, float xCoord, float yCoord) {
+  CreateBody(width, height, xCoord, yCoord, 0.0f, 1.0f, 0.0f);
+}
+
+void GameWorld::CreateBody(float width, float height, float xCoord,
+                           float yCoord, float red, float green, float blue) {
   b2BodyDef bodyDef;
-  bodyDef.position.Set(Conversions::toPhysics(position).x, Conversions::toPhysics(position).y);
+  bodyDef.position.Set(Conversions::toPhysics(xCoord), Conversions::toPhysics(yCoord));
   b2Body* body = world.CreateBody(&bodyDef);
-  GameBody newBody(body, Conversions::toPhysics(position), Conversions::dimensionsToPhysics(width), Conversions::dimensionsToPhysics(height));
+  GameBody newBody(body, Conversions::toPhysics(b2Vec2(xCoord, yCoord)), Conversions::dimensionsToPhysics(width), Conversions::dimensionsToPhysics(height), red, green, blue);
   bodies.push_back(newBody);
   b2PolygonShape box;
   box.SetAsBox(newBody.getWidth(), newBody.getHeight());
   body->CreateFixture(&box, 0.0);
-
+//  newBody.setColor(red, green, blue);
 }
 
 void GameWorld::Step(float32 timeStep, int32 velocityIterations, int32 positionIterations) {
@@ -47,15 +56,23 @@ void GameWorld::Step(float32 timeStep, int32 velocityIterations, int32 positionI
 
 }
 
-void GameWorld::Step(bool left, bool right, bool up, bool down) {
+bool GameWorld::Step(bool left, bool right, bool up, bool down) {
   player.processDirectionalInput(left, right, up, down);
   world.Step(timeStep, velocityIterations, positionIterations);
+  return playerAtEnd();
 }
 
 void GameWorld::draw() {
   for (auto iter = bodies.begin(); iter != bodies.end(); iter++) {
     iter->draw();
   }
+  player.draw();
+
+  //draw the endpoint
+  cinder::gl::color(1.0f, 1.0f, 1.0f);
+  vec2 endPointPos = Conversions::toScreen(endPoint);
+  Rectf rect(endPointPos.x - 25.0f, endPointPos.y - 25.0f, endPointPos.x + 25.0f, endPointPos.y + 25.0f);
+  cinder::gl::drawSolidRect(rect);
 
 }
 void GameWorld::setPlayer(float posX, float posY) {
@@ -81,6 +98,23 @@ void GameWorld::setPlayer(float posX, float posY) {
 PlayerBody GameWorld::getPlayer() {
   return player;
 }
+
+void GameWorld::setEndPoint(float xCoord, float yCoord) {
+  this->endPoint.x = Conversions::toPhysics(xCoord);
+  this->endPoint.y = Conversions::toPhysics(yCoord);
+}
+
+bool GameWorld::playerAtEnd() {
+  return sqrt(pow(endPoint.x - player.getPhysicsPosition().x , 2) +
+              pow(endPoint.y - player.getPhysicsPosition().y, 2)) < 1.0f;
+}
+void GameWorld::setWorldBottom(float newBottom) {
+  this->worldBottom = Conversions::toPhysics(newBottom);
+}
+bool GameWorld::playerFellThroughPit() {
+  return (player.getPhysicsPosition().y > worldBottom);
+}
+
 
 //void GameWorld::addPlayer(b2BodyDef newPlayer) {
 //  newPlayer.type = b2_dynamicBody;

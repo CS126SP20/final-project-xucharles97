@@ -34,8 +34,8 @@ class MyApp : public cinder::app::App {
   bool leftPressed;
   bool rightPressed;
   int jumpCooldown;
-  bool inJumpCooldown;
   int timeUntilNextJump;
+  bool levelPassed;
 
 };
 

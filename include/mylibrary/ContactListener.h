@@ -17,12 +17,16 @@
 
 class ContactListener : public b2ContactListener {
  public:
-//  Contact mostRecentContact;
+  /**
+   * Default Constructor
+   */
   ContactListener();
 
  private:
+  /** Called whenever two objects come into contact with each other
+   * @param contact the b2Contac object containing the two bodies that collided
+   */
   void BeginContact(b2Contact* contact);
-  void EndContact(b2Contact contact);
 
 
 };

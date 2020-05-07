@@ -7,7 +7,7 @@
 #include <mylibrary/ConversionUtils.h>
 
 PlayerBody::PlayerBody() {
-  color = {1, 0, 0};
+  setColor(1.0f, 0.0f, 0.0f);
   numJumps = 2;
   currentDirection = DIR_STOP;
 }
@@ -36,7 +36,7 @@ PlayerBody::PlayerBody(b2Body* bodyInput, float bodyWidth, float bodyHeight) {
 //  body->SetUserData(this);
 
 
-  color = {1, 0, 0};
+  setColor(1.0f, 0.0f, 0.0f);
   maxJumps = 2;
   numJumps = maxJumps;
   currentDirection = DIR_STOP;
@@ -158,9 +158,9 @@ void PlayerBody::touchedGround() {
 //  std::cout << "numJumps: " << std::to_string(numJumps) << std::endl;
 //  std::cout << "maxJumps: " << std::to_string(maxJumps) << std::endl;
 }
-void PlayerBody::leftGround() {
-  isTouchingGround = false;
-}
+//void PlayerBody::leftGround() {
+//  isTouchingGround = false;
+//}
 bool PlayerBody::isFalling() {
   bool falling = true;
   float currentYVelocity = body->GetLinearVelocity().y;

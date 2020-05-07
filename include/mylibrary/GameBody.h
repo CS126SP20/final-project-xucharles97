@@ -12,27 +12,35 @@ using cinder::Color;
 
 class GameBody {
  public:
+  //constructors
   GameBody();
-  GameBody(b2Body* body, b2Vec2 position, float width, float height);
-  GameBody(b2Body* body, float width, float height);
+  GameBody(b2Body* body, b2Vec2 position, float width, float height, float red, float green, float blue);
+
+  /**
+   * draws the body
+   * virtual so that PlayerBody can override it
+   */
   virtual void draw();
+
+  //getters
   b2Vec2 getPosition();
   float getWidth();
   float getHeight();
 
-  //Need:
-  //b2BodyDef w/ position vector
-  //b2Body* from World.CreateBody
-  //b2PolygonShape (box) w/ dimensions
-  //Color
+  //setters
+  void setColor(float r, float g, float b);
+
+
  protected:
-  b2Vec2 position;
+  b2Vec2 position; //position based on the Box2D simulation
   b2Body* body;
-  float width;
+  float width; //width and height in physics dimensions
   float height;
   b2PolygonShape shape;
   b2FixtureDef fixtureDef;
-  Color color;
+  float red;
+  float green;
+  float blue;
 };
 
 #endif  // FINALPROJECT_GAMEBODY_H
